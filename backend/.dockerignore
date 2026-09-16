@@ -1,6 +1,13 @@
 __pycache__
+**/__pycache__
 *.pyc
 .venv
+venv
 .env
 dev.db
 tests
+.pytest_cache
+.git
+.gitignore
+*.md
+alembic.ini.bak
