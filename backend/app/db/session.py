@@ -3,7 +3,11 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import settings
 
-_connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
+_connect_args = (
+    {"check_same_thread": False}
+    if settings.database_url.startswith("sqlite")
+    else {}
+)
 
 engine = create_engine(
     settings.database_url,
@@ -12,12 +16,16 @@ engine = create_engine(
     future=True,
 )
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
+SessionLocal = sessionmaker(
+    bind=engine,
+    autocommit=False,
+    autoflush=False,
+    future=True,
+)
 
-
-def get_db() -> Session:
-    """FastAPI dependency - yields a DB session and always closes it."""
-    db = SessionLocal()
+def get_db():
+    """FastAPI dependency"""
+    db: Session = SessionLocal()
     try:
         yield db
     finally:

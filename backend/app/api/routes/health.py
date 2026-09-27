@@ -1,8 +1,12 @@
 from fastapi import APIRouter
 
-router = APIRouter(tags=["health"])
+router = APIRouter(prefix="/health", tags=["Health"])
 
-
-@router.get("/health")
-def health_check():
-    return {"status": "ok"}
+@router.get("")
+async def health():
+    return {
+        "success": True,
+        "service": "AI Faculty Assistant Backend",
+        "version": "1.0.0",
+        "status": "healthy"
+    }

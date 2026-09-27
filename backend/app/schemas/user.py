@@ -1,7 +1,5 @@
 from datetime import datetime
-
 from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
-
 from app.db.models.user import UserRole
 
 _ASSIGNABLE_ROLES = {UserRole.PAPER_CHECKER, UserRole.CORRECTION, UserRole.GRIEVANCE_BODY}
