@@ -6,15 +6,29 @@ async function request(path, options = {}) {
     ...options
   });
   const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(body.detail || `Request failed: ${res.status}`);
+  if (!res.ok) throw new Error(errorText(body, res.status));
   return body;
+}
+
+// FastAPI sends a string for our own errors but a list of objects for 422s.
+function errorText(body, status) {
+  if (typeof body.detail === "string") return body.detail;
+  if (Array.isArray(body.detail)) return body.detail.map((d) => d.msg).join(", ");
+  return `Request failed: ${status}`;
 }
 
 export const api = {
   health: () => request("/health"),
-  login: (identifier, password) => request("/auth/login", {
+  // The route schema says `email`, the auth service says `identifier`. Send both
+  // so this keeps working whichever way the backend settles.
+  login: (email, password) => request("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ identifier, password })
+    body: JSON.stringify({ email, identifier: email, password })
+  }),
+  // payload: { name, email, password, department, teaching_assignments: [{ academic_year, subject }] }
+  signup: (payload) => request("/auth/signup", {
+    method: "POST",
+    body: JSON.stringify(payload)
   }),
   me: (token) => request("/auth/me", { headers: authHeaders(token) }),
   changePassword: (token, current_password, new_password) => request("/auth/change-password", {

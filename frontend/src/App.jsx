@@ -1,20 +1,24 @@
-import { useEffect, useState } from "react";
-import { api } from "./api/client.js";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { useAuth } from "./context/AuthContext.jsx";
+import LandingPage from "./pages/LandingPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+import SignupPage from "./pages/SignupPage.jsx";
+import DashboardPage from "./pages/DashboardPage.jsx";
+
+// UX-only guard. The backend still checks the token on every request.
+function ProtectedRoute({ children }) {
+  const { token } = useAuth();
+  return token ? children : <Navigate to="/login" replace />;
+}
 
 export default function App() {
-  const [status, setStatus] = useState("checking...");
-
-  useEffect(() => {
-    api
-      .health()
-      .then((data) => setStatus(data.status))
-      .catch(() => setStatus("backend unreachable"));
-  }, []);
-
   return (
-    <div style={{ fontFamily: "sans-serif", padding: "2rem" }}>
-      <h1>Frontend + Backend Template</h1>
-      <p>Backend health: {status}</p>
-    </div>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
