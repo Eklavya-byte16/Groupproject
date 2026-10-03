@@ -22,8 +22,8 @@ class Settings(BaseSettings):
 
     # --- database ---
     # Production: postgresql+psycopg2://user:pass@host:5432/dbname
-    # Local dev fallback: sqlite:///./dev.db
-    database_url: str = "sqlite:///./dev.db"
+    # PostgreSQL is mandatory for this application.
+    database_url: str = "postgresql+psycopg2://app:app@localhost:5432/app"
 
     # --- auth / jwt ---
     # MUST be overridden in production via env var JWT_SECRET_KEY.
@@ -56,6 +56,25 @@ class Settings(BaseSettings):
 
     # --- frontend (for links inside emails) ---
     frontend_base_url: str = "http://localhost:5173"
+
+    # --- Phase 5: Hugging Face LLM ---
+    # Keep the provider/model configurable so the project is not locked to one model.
+    hf_token: str = ""
+    hf_provider: str = "auto"
+    llm_model: str = "meta-llama/Llama-3.1-8B-Instruct"
+    llm_timeout_seconds: float = 60.0
+
+    # --- Phase 5B: embeddings / RAG ---
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
+    embedding_dimensions: int = 384
+    embedding_timeout_seconds: float = 60.0
+    rag_top_k: int = 5
+    rag_min_similarity: float = 0.15
+    # --- OCR for scanned PDFs ---
+    ocr_language: str = "en"
+    ocr_dpi: int = 180
+    ocr_min_native_chars: int = 40
+    ocr_min_native_words: int = 8
 
     @field_validator("environment")
     @classmethod
